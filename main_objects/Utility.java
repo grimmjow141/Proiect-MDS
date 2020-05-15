@@ -14,19 +14,22 @@ import java.lang.reflect.Modifier;
 import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Paths;
+import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Locale;
 import java.util.Scanner;
 
-//just an auxiliary abstract class to store different utility functions and often used variables
+//just an auxiliary abstract class to store different utility often used functions and variables
 public abstract class Utility {
 	
 	private Utility() { }    //to prevent instantiation
 	
 	public static final SimpleDateFormat date_format = new SimpleDateFormat("E dd.MM hh:mm a"); //custom date format
-	public static final SimpleDateFormat hour_format = new SimpleDateFormat("hh:mm"); //custom date format
-	public static enum Exc {STUDENT, RETIRED, DISABLED;}              //exception, used in Client class
+	public static final SimpleDateFormat hour_format = new SimpleDateFormat("hh:mm");           //custom hour format
+	public static enum Exc {STUDENT, RETIRED, DISABLED;}                  //exception, used in Client class
 	public static enum Type {ACTION, ADVENTURE, THRILLER, COMEDY, DRAMA;} //type of a movie, used in Movie class
 
 	public static String fill_zeros (int id) {       //it fills with 0s in the format: #CCC
@@ -40,60 +43,56 @@ public abstract class Utility {
 				return "00" + nr;
 	}
 	
-	public static <T> ArrayList<T> read_from_file(String path, Class<T> type){ 
+	
+	@SuppressWarnings("The objects MUST have constructor with no parameters") 
+	public static <T> ArrayList<T> read_from_file(String path, Class<T> type) { 
 		try {
 			ArrayList<T> objects = new ArrayList<T>();
 			Field[] fields = type.getDeclaredFields();
 			
-			
-			ArrayList<Field> unsynthetic_fields = new ArrayList<Field>();
 			for (Field field: fields)
-				if (!field.isSynthetic()) 
-					unsynthetic_fields.add(field);
-			for (Field field: unsynthetic_fields)
 				field.setAccessible(true);
-
-//			System.out.println("nr of fields: " + unsynthetic_fields.size());
-			
 			for (String line: Files.readAllLines(Paths.get(path))) {
-	
 				String[] values = line.split(",");
-//				for (String value: values)
-//					System.out.println(value);
-			
 				T object = (T) Class.forName(type.getName()).newInstance();
-				if (values.length == unsynthetic_fields.size()) {
-					for (int i = 0; i < unsynthetic_fields.size(); i ++) {
+				if (values.length == fields.length) {
+					for (int i = 0; i < fields.length; i ++) {
 						if (!values[i].isBlank()) {
-						
 							//object = (T) Class.forName(type.getName()).newInstance();
 							Object value = null;   
-							String name = Character.toUpperCase(unsynthetic_fields.get(i).getType().getSimpleName().charAt(0)) + unsynthetic_fields.get(i).getType().getSimpleName().substring(1); 
-							if (String.class.equals(unsynthetic_fields.get(i).getType())) 
-								unsynthetic_fields.get(i).set(object, values[i]);
-							else if (char.class.equals(unsynthetic_fields.get(i).getType())) {
+							String name = Character.toUpperCase(fields[i].getType().getSimpleName().charAt(0)) + fields[i].getType().getSimpleName().substring(1); 
+							if (String.class.equals(fields[i].getType())) 
+								fields[i].set(object, values[i]);
+							else if (char.class.equals(fields[i].getType())) {
 								if (values[i].length() == 1) 	//we make sure that the string has length of 1 to "cast" to char type
-									unsynthetic_fields.get(i).set(object, values[i].charAt(0));
+									fields[i].set(object, values[i].charAt(0));
 								else 
-									unsynthetic_fields.get(i).set(object, null);
+									fields[i].set(object, null);
+							} 
+							else if (Date.class.equals(fields[i].getType())) {
+								try {
+									SimpleDateFormat f = new SimpleDateFormat("E MMM dd HH:mm:ss z yyyy");			
+									fields[i].set(object, f.parse(values[i]));
+								} catch (ParseException e) {
+									fields[i].set(object, null);
+									e.printStackTrace();
+								}
 							}
 							else {
 								Class<?> field_type;
-								if (unsynthetic_fields.get(i).getType().isPrimitive()) {
-						
-									field_type = Class.forName("java.lang." + name + ( (int.class.equals(unsynthetic_fields.get(i).getType()) ) ? "eger" : "") );
+								if (fields[i].getType().isPrimitive()) {
+									field_type = Class.forName("java.lang." + name + ( (int.class.equals(fields[i].getType()) ) ? "eger" : "") );
 									Method method = field_type.getMethod("parse" + name, String.class);
 									value = method.invoke(null, values[i]);
+								} else if (fields[i].getType().isEnum()) {
 									
-								} else if (unsynthetic_fields.get(i).getType().isEnum()) {
-									
-									field_type = Class.forName(unsynthetic_fields.get(i).getType().getName());
+									field_type = Class.forName(fields[i].getType().getName());
 									value = Enum.valueOf((Class<Enum>) field_type, values[i]);
 								}
-								unsynthetic_fields.get(i).set(object, value);
+								fields[i].set(object, value);
 							}
 						} else 
-							unsynthetic_fields.get(i).set(object, null);
+							fields[i].set(object, null);
 					}
 					objects.add(object);
 				} 
@@ -128,6 +127,7 @@ public abstract class Utility {
 		} 
 		return null;
 	}
+	
 	
 	
 	public static <T> void write_to_file (String path, ArrayList<T> objects) {

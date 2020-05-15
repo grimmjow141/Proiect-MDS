@@ -13,6 +13,8 @@ public class Movie {
 	private Date start_time;
 	private Date end_time;
 	
+	public Movie() { }
+	
 	public Movie(String name) {
 		this.name = name;
 	}
