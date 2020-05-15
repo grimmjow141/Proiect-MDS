@@ -6,11 +6,11 @@ public class Admin{
         JButton acamere = new JButton("Adauga Camere");
         JButton bcamere = new JButton("Sterge Camere");
         JButton abilete = new JButton("Locuri Ocupate");
-        JFrame adaugafilme = new JFrame("Adauga Filme");
-        JFrame stergefilme = new JFrame("Sterge Filme");
-        JFrame adaugacamere = new JFrame("Adauga Camere");
-        JFrame stergecamere = new JFrame("Sterge Camere");
-        JFrame modificabilete = new JFrame("Modifica Bilete");
+        AFilme adaugafilme = new AFilme("Adauga Filme");
+        SFilme stergefilme = new SFilme("Sterge Filme");
+        ACamere adaugacamere = new ACamere("Adauga Camere");
+        SCamere stergecamere = new SCamere("Sterge Camere");
+        MBilete modificabilete = new MBilete("Modifica Bilete");
         bfilme.setBounds(50,100,95,30);
         bfilme.addActionListener(new ActionListener(this){ 
             adaugafilme.add(bfilme);
@@ -18,7 +18,6 @@ public class Admin{
             adaugafilme.setLayout(null);  
             adaugafilme.setVisible(true);
             
-            JFrame inter_1 = new JFrame("Inter_1");
             JLabel label_1 = new JLabel("Titlu: ");
             JLabel label_2 = new JLabel("Gen: ");
             JLabel label_3 = new JLabel("Ora inceput: ");
@@ -48,9 +47,7 @@ public class Admin{
             stergefilme.setSize(800,800);  
             stergefilme.setLayout(null);  
             stergefilme.setVisible(true);
-            
-            JFrame inter_1 = new JFrame("Inter_2");
-            
+                        
             JTextField titlu = new JTextField(25);
 
             label_1.setLabelFor(titlu);
@@ -73,7 +70,6 @@ public class Admin{
             adaugacamere.setLayout(null);  
             adaugacamere.setVisible(true);
             
-            JFrame inter_1 = new JFrame("Inter_3");
             JLabel label_1 = new JLabel("Randuri: ");
             JLabel label_2 = new JLabel("Coloane: ");
             
@@ -95,7 +91,6 @@ public class Admin{
             stergecamere.setSize(800,800);  
             stergecamere.setLayout(null);  
             stergecamere.setVisible(true);
-            JFrame inter_1 = new JFrame("Inter_4");
             JLabel label_1 = new JLabel("ID: ");
             
             JTextField id = new JTextField(15);
@@ -118,7 +113,6 @@ public class Admin{
             modificabilete.setSize(800,800);  
             modificabilete.setLayout(null);  
             modificabilete.setVisible(true);
-            JFrame inter_1 = new JFrame("Inter_5");
             JLabel label_1 = new JLabel("ID: ");
             JLabel label_2 = new JLabel("Linii: ");
             JLabel label_3 = new JLabel("Coloane: ");
