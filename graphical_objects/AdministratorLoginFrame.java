@@ -18,6 +18,7 @@ import javax.swing.*;
 public class AdministratorLoginFrame extends JFrame{
 
 	public AdministratorLoginFrame() {
+		AdministratorLoginFrame root = this;
 		
 		setName("Login");
 		setLocation(420, 340);
@@ -82,7 +83,13 @@ public class AdministratorLoginFrame extends JFrame{
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
+				if ( (user_field.getText().equals("admin")) && (pass_field.getText().equals("123456")) ) {
+					root.dispose();
+					new AdministratorPage();
+				}
+				
+				else 
+					JOptionPane.showMessageDialog(root, "Invalid username or password, try again..");
 				
 			}
 		});

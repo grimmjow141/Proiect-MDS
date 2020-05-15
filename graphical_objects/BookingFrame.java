@@ -16,8 +16,11 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Vector;
@@ -54,6 +57,7 @@ public class BookingFrame extends JFrame{
 			row = -1;
 			column = -1;
 		}
+		
 		GridButton(int row, int column) {
 			this.row = row;
 			this.column = column;
@@ -109,13 +113,13 @@ public class BookingFrame extends JFrame{
 		setResizable(false);
 		setLocation(370, 270);
 		setLayout(new BorderLayout(20, 0));
-		paint(getGraphics());
+		//paint(getGraphics());
 		
-		cinema = new Cinema();
-		cinema.add_new_room(10, 5);
-		cinema.add_new_room(10, 9);
-		cinema.add_new_room(5, 3);
-		cinema.add_new_room(5, 6);
+//		cinema = new Cinema();
+//		cinema.add_new_room(10, 5);
+//		cinema.add_new_room(10, 9);
+//		cinema.add_new_room(5, 3);
+//		cinema.add_new_room(5, 6);
 		
 		movie_info = new JPanel(new GridBagLayout());
 		movie_info.setBorder(new EmptyBorder(5, 15, 5, 100));
@@ -133,23 +137,13 @@ public class BookingFrame extends JFrame{
 		JButton filter_button = new JButton("Filter");
 		
 		JComboBox<Movie> movie_field = new JComboBox<Movie>();
-		
-		Vector<Movie> movie_list = new Vector<Movie>();
-		Movie movie_1 = new Movie("Batman", Utility.Type.ACTION, "16:00", "17:00");
-		Movie movie_2 = new Movie("Superman", Utility.Type.ACTION, "14:00", "15:30");
-		Movie movie_3 = new Movie("Ratatui", Utility.Type.THRILLER, "01:00", "02:00");
-		Movie movie_4 = new Movie("Black panther 2", Utility.Type.ADVENTURE);
-		Movie movie_5 = new Movie("Hachiko", Utility.Type.DRAMA, "14:30", "16:00");
-		movie_list.add(movie_1);
-		movie_list.add(movie_2);
-		movie_list.add(movie_3);
-		movie_list.add(movie_4);
-		movie_list.add(movie_5);
 		movie_field.insertItemAt(null, 0);
-		for (int i = 0; i < 5; i ++)
-			movie_field.addItem(movie_list.get(i));
+		ArrayList<Movie> movie_list = Utility.read_from_file("data/movies.csv", Movie.class);
+		for (Movie it: movie_list)
+			movie_field.addItem(it);
+	
 		Map<Movie, Room> map = new HashMap<Movie, Room>();
-		for (int i = 0; i < 5; i ++)
+		for (int i = 0; i < movie_list.size(); i ++)
 			map.put(movie_list.get(i), cinema.getHall().get(new Random().nextInt(cinema.getNr_of_rooms()))); //it links every movie with a random room in our static cinema field
 		
 		JComboBox<Utility.Type> type_field = new JComboBox<Utility.Type>();
@@ -169,8 +163,6 @@ public class BookingFrame extends JFrame{
 		exc_field.addItem(Utility.Exc.STUDENT);
 		exc_field.addItem(Utility.Exc.DISABLED);
 		exc_field.addItem(Utility.Exc.RETIRED);
-		
-		
 	
 		JPanel info_panel = new JPanel();
 		GridBagLayout my_layout = new GridBagLayout();
@@ -260,6 +252,7 @@ public class BookingFrame extends JFrame{
 						matrix.show_image = true;
 						matrix.repaint();
 						return;
+						
 					}
 					Movie selected_movie = (Movie) e.getItem();
 					Room room = (Room) map.get(selected_movie);
@@ -272,6 +265,8 @@ public class BookingFrame extends JFrame{
 					matrix.repaint();
 					matrix.setVisible(true);
 					type_field.setSelectedItem(selected_movie.getType());
+					
+					System.out.println(room.getId());
 
 					for (int i = 0; i < rows; i ++)
 						for (int j = 0; j < columns; j ++) {
@@ -390,15 +385,15 @@ public class BookingFrame extends JFrame{
 					singleton_seat_list.add(selected_seat);
 					singleton_client_list.add(selected_client);
 					singleton_ticket_list.add(ticket);
-					
-					Utility.write_to_file("data/clients.csv", singleton_client_list); //we are writing the data in files 
+					//we are writing the data in files 
+					Utility.write_to_file("data/clients.csv", singleton_client_list); 
 					Utility.write_to_file("data/occupied_seats.csv", singleton_seat_list);
 					Utility.write_to_file("data/tickets.csv", singleton_ticket_list);
 					
 					matrix.buttons[selected_row][selected_column].setBackground(Color.RED);  //we set the red color of the selected seat in matrix 
 					Ticket.setNr_of_tickets(Ticket.getNr_of_tickets());
-					root_frame.dispose(); //we close the booking frame
-					new TicketFrame(ticket); 
+					root_frame.dispose(); 	//we close the booking frame
+					new TicketFrame(ticket);//visual representation of the reserved ticket
 				}
 			}
 		});
@@ -411,16 +406,27 @@ public class BookingFrame extends JFrame{
 		});
 		
 	}
+
+	public static Cinema getCinema () {
+		return cinema;
+	}
+	
+	public static void setCinema(Cinema cinema) {
+		BookingFrame.cinema = cinema;
+	}
 	
 	public void getData() {
 		ArrayList<OccupiedSeat> occupied_seats = Utility.read_from_file("data/occupied_seats.csv", OccupiedSeat.class);
 		for (OccupiedSeat seat: occupied_seats) {
 			cinema.getHall().get(seat.getRoom()).getSeats()[seat.getRow()][seat.getColumn()] = true;
 		}
-		ArrayList<Ticket> tickets = Utility.read_from_file("data/tickets.csv", Ticket.class);
-		System.out.println(tickets.size());
-//		for (Ticket ticket: tickets)
-//			System.out.println(ticket);
+		try {
+			int nr = Files.readAllLines(Paths.get("data/tickets.csv")).size();
+			Ticket.setNr_of_tickets(nr);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	@Override
