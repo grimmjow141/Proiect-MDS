@@ -10,7 +10,15 @@ import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.util.Scanner;
 
+import javax.crypto.BadPaddingException;
+import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
+import javax.crypto.spec.SecretKeySpec;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 
@@ -83,13 +91,45 @@ public class AdministratorLoginFrame extends JFrame{
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if ( (user_field.getText().equals("admin")) && (pass_field.getText().equals("123456")) ) {
-					root.dispose();
-					new AdministratorPage();
+				try {
+		        	Scanner scanner = new Scanner(new File("data/pass.txt"));
+		        	if (scanner.hasNextLine()) {
+		        		String encr_pass = scanner.nextLine();
+		        		//DECRYPTION
+		        		String key = "cepoi";
+		        		SecretKeySpec skeyspec = new SecretKeySpec(key.getBytes(),"Blowfish");
+		        		Cipher cipher=Cipher.getInstance("Blowfish");
+		        		cipher.init(Cipher.DECRYPT_MODE, skeyspec);
+		        		byte[] decrypted=cipher.doFinal(encr_pass.getBytes());
+		        		String password = new String(decrypted);
+		        		if ( (user_field.getText().equals("admin")) && (pass_field.getText().equals(password)) ) {
+							root.dispose();
+							new AdministratorPage();
+						}
+						
+						else 
+							JOptionPane.showMessageDialog(root, "Invalid username or password, try again..");
+		        	}
+					scanner.close();
+				} catch (IOException e2) {
+					// TODO Auto-generated catch block
+					e2.printStackTrace();
+				} catch (NoSuchAlgorithmException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (NoSuchPaddingException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (InvalidKeyException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (IllegalBlockSizeException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (BadPaddingException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
 				}
-				
-				else 
-					JOptionPane.showMessageDialog(root, "Invalid username or password, try again..");
 				
 			}
 		});
