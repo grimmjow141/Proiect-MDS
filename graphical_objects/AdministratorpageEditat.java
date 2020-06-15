@@ -374,8 +374,6 @@ public class AdministratorPage extends JFrame{
 					String numar = id.getText();
 					for(OccupiedSeat it: list)
 						if(it.getRoom().equals(id))
-					
-                    new Room(randuri,coloane);
                 }
             });
 	  }
