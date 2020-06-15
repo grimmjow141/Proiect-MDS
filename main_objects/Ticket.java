@@ -24,6 +24,7 @@ public class Ticket {
 		this.movie = movie;
 		this.client = client;
 		this.occupied_seat = occupied_seat;
+		
 		if (client.getExc() != null)
 			switch(client.getExc()) {
 				case STUDENT:
@@ -37,6 +38,7 @@ public class Ticket {
 			}
 		else
 			price = 10.0f;
+		
 		sell_date = new Date();                  //we initialize sell_date with the current date
 		String type = (movie.getType() != null) ? movie.getType().toString() : "";//auxiliary variable, it stores the type but in string
 		key_code = "#" + Utility.fill_zeros(id) + "|";

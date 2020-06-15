@@ -6,6 +6,7 @@ import java.util.Date;
 
 import javax.swing.*;
 
+import graphical_objects.AdministratorLoginFrame;
 import graphical_objects.AdministratorPage;
 import graphical_objects.StartMenu;
 import graphical_objects.TicketFrame;
@@ -20,7 +21,6 @@ public class main {
 		window.setVisible(true);
 		window.setResizable(false);
 		window.setSize(600, 400);
-		window.setContentPane(new StartMenu());
-		
+		window.setContentPane(new StartMenu()); 
 	}
 }

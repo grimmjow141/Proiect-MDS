@@ -10,14 +10,12 @@ public class Cinema {
 	
 	private List <Room> hall;
 	private Set <Client> client_list; //we use sets because we don't want any duplicates
-	private Bar bar;
 	private int max_capacity;
 	private int nr_of_rooms;
 	
 	public Cinema() {
 		hall = new LinkedList<Room>();
 		client_list = new HashSet <Client>();
-		bar = new Bar();
 		max_capacity = 0;
 		nr_of_rooms = 0;
 	}
@@ -40,7 +38,7 @@ public class Cinema {
 	}
 	
 	public Ticket reserve_seat (int row, int column, Room room, Movie movie, Client client) {
-		if (!room.getSeats()[row][column]) { 		//if the seat is not occupied
+		if (!room.isOccupied(row, column)) { 		//if the seat is not occupied
 			room.getSeats()[row][column] = true;
 			Ticket reserved_ticket = new Ticket(movie, client, new OccupiedSeat(room.getId(), row, column));
 			return reserved_ticket;
@@ -65,7 +63,4 @@ public class Cinema {
 		return nr_of_rooms;
 	}
 	
-	public Bar getBar() {
-		return bar;
-	}
 }

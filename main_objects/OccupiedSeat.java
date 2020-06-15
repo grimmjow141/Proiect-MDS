@@ -28,7 +28,7 @@ public class OccupiedSeat {
 	
 	@Override
 	public String toString() {
-		return "[" + room + "|" + row + "|" + column + "]\n";
+		return "[" + room + "|" + row + "|" + column + "]";
 	}
 
 }
