@@ -1,23 +1,21 @@
 package main_objects;
 
 import java.util.Queue;
-import java.util.concurrent.LinkedBlockingQueue;
 
 public class Bar {
+	private Queue<Order> orders;
 	private float juice_container[];
-	private Queue <Order> orders;   
 	
-	Bar() {
-		juice_container = new float[3]; //we suppose that a bar has 3 juice containers
-		orders = new LinkedBlockingQueue <Order>();
+	public Bar() {
+		juice_container = new float[3]; //cola, fanta, sprite for ex.. and the values are indicating how much juice is left
 	}
 	
-	public void add_orders (Order... order) {
-		for (Order i: order)
+	public void add_orders(Order...values) {
+		for (Order i: values)
 			orders.add(i);
 	}
 	
-	public Queue <Order> getOrders () {
+	public Queue<Order> get_orders() {
 		return orders;
 	}
 }
